@@ -1,0 +1,43 @@
+// File: tb_up_down_counter.v
+`timescale 1ns/1ps
+
+module tb_up_down_counter;
+
+    reg clk, reset, up_down;
+    wire [3:0] count;
+
+    // Instantiate DUT
+    up_down_counter uut (
+        .clk(clk),
+        .reset(reset),
+        .up_down(up_down),
+        .count(count)
+    );
+
+    // Clock generation
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;  // 10ns clock period
+    end
+
+    initial begin
+        // Dump waveform for EPWave
+        $dumpfile("dump.vcd");
+        $dumpvars(0, tb_up_down_counter);
+
+        $display("Time\tReset Up_Down Count");
+        $monitor("%0t\t%b     %b       %b", $time, reset, up_down, count);
+
+        // Initialize inputs
+        reset = 1; up_down = 1; #10;
+        reset = 0; #50;   // Count up
+
+        up_down = 0; #50; // Count down
+
+        reset = 1; #10;   // Reset again
+        reset = 0; up_down = 1; #30;
+
+        $finish;
+    end
+
+endmodule
