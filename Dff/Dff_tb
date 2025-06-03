@@ -1,0 +1,48 @@
+`timescale 1ns / 1ps
+
+module tb_d_ff;
+
+    reg clk;
+    reg reset;
+    reg d;
+    wire q;
+
+    // Instantiate the D Flip-Flop
+    d_ff uut (
+        .clk(clk),
+        .reset(reset),
+        .d(d),
+        .q(q)
+    );
+
+    // Clock generation: 10ns period
+    initial clk = 0;
+    always #5 clk = ~clk;
+
+    initial begin
+        // VCD dump for waveform viewing
+        $dumpfile("d_ff_tb.vcd");
+        $dumpvars(0, tb_d_ff);
+
+        // Initial values
+        reset = 1;
+        d = 0;
+
+        // Hold reset for 2 cycles
+        #12;
+        reset = 0;
+
+        // Test sequence
+        d = 1; #10;
+        d = 0; #10;
+        d = 1; #10;
+        d = 1; #10;
+        d = 0; #10;
+        d = 1; #10;
+
+        // Finish simulation
+        #20;
+        $finish;
+    end
+
+endmodule
